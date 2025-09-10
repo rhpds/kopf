@@ -154,6 +154,7 @@ def validate(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -187,6 +188,7 @@ def validate(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.WebhookHandler(
             fn=fn, id=real_id, param=param,
@@ -215,6 +217,7 @@ def mutate(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -248,6 +251,7 @@ def mutate(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.WebhookHandler(
             fn=fn, id=real_id, param=param,
@@ -276,6 +280,7 @@ def resume(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -306,6 +311,7 @@ def resume(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.ChangingHandler(
             fn=fn, id=real_id, param=param,
@@ -334,6 +340,7 @@ def create(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -363,6 +370,7 @@ def create(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.ChangingHandler(
             fn=fn, id=real_id, param=param,
@@ -391,6 +399,7 @@ def update(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -422,6 +431,7 @@ def update(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.ChangingHandler(
             fn=fn, id=real_id, param=param,
@@ -450,6 +460,7 @@ def delete(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -480,6 +491,7 @@ def delete(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.ChangingHandler(
             fn=fn, id=real_id, param=param,
@@ -508,6 +520,7 @@ def field(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -539,6 +552,7 @@ def field(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.ChangingHandler(
             fn=fn, id=real_id, param=param,
@@ -567,6 +581,7 @@ def index(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -596,6 +611,7 @@ def index(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.IndexingHandler(
             fn=fn, id=real_id, param=param,
@@ -622,6 +638,7 @@ def event(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -647,6 +664,7 @@ def event(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.WatchingHandler(
             fn=fn, id=real_id, param=param,
@@ -673,6 +691,7 @@ def daemon(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -706,6 +725,7 @@ def daemon(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.DaemonHandler(
             fn=fn, id=real_id, param=param,
@@ -736,6 +756,7 @@ def timer(  # lgtm[py/similar-function]
         singular: str | None = None,
         shortcut: str | None = None,
         category: str | None = None,
+        label_selector: str | None = None,
         # Handler's behaviour specification:
         id: str | None = None,
         param: Any | None = None,
@@ -769,6 +790,7 @@ def timer(  # lgtm[py/similar-function]
             arg1, arg2, arg3,
             group=group, version=version,
             kind=kind, plural=plural, singular=singular, shortcut=shortcut, category=category,
+            label_selector=label_selector,
         )
         handler = handlers.TimerHandler(
             fn=fn, id=real_id, param=param,

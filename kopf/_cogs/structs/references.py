@@ -1,4 +1,5 @@
 import asyncio
+import copy
 import dataclasses
 import enum
 import fnmatch
@@ -148,6 +149,11 @@ class Resource:
     The resource's categories, to which the resource belongs; e.g. ``{"all"}``.
     """
 
+    label_selector: str|None = None
+    """
+    Label selector applied to resource; e.g. ``"app.kubernetes.io/name=foo"``
+    """
+
     subresources: frozenset[str] = frozenset()
     """
     The resource's subresources, if defined; e.g. ``{"status", "scale"}``.
@@ -172,12 +178,12 @@ class Resource:
     """
 
     def __hash__(self) -> int:
-        return hash((self.group, self.version, self.plural))
+        return hash((self.group, self.version, self.plural, self.label_selector))
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Resource):
-            self_tuple = (self.group, self.version, self.plural)
-            other_tuple = (other.group, other.version, other.plural)
+            self_tuple = (self.group, self.version, self.plural, self.label_selector)
+            other_tuple = (other.group, other.version, other.plural, other.label_selector)
             return self_tuple == other_tuple
         else:
             return NotImplemented
@@ -186,7 +192,8 @@ class Resource:
         plural_main, *subs = self.plural.split('/')
         name_text = f'{plural_main}.{self.version}.{self.group}'.strip('.')
         subs_text = f'/{"/".join(subs)}' if subs else ''
-        return f'{name_text}{subs_text}'
+        label_selector_text = f' ({self.label_selector})' if self.label_selector else ''
+        return f'{name_text}{subs_text}{label_selector_text}'
 
     # Mostly for tests, to be used as `@kopf.on.event(*resource, ...)`
     def __iter__(self) -> Iterator[str]:
@@ -221,6 +228,11 @@ class Resource:
             raise ValueError(f"Specific namespaces are not supported for cluster-scoped resources.")
         if self.namespaced and namespace is None and name is not None:
             raise ValueError("Specific namespaces are required for specific namespaced resources.")
+
+        if name is None and self.label_selector is not None:
+            if params is None:
+                params = {}
+            params['labelSelector'] = self.label_selector
 
         parts: list[str | None] = [
             '/api' if self.group == '' and self.version == 'v1' else '/apis',
@@ -280,6 +292,7 @@ class Selector:
     shortcut: str | None = None
     category: str | None = None
     any_name: str | Marker | None = None
+    label_selector: str | None = None
 
     fn: Callable[[Resource], bool] | None = None
 
@@ -388,7 +401,9 @@ class Selector:
         )
 
     def select(self, resources: Collection[Resource]) -> Collection[Resource]:
-        result = {resource for resource in resources if self.check(resource)}
+        result = {
+            self.select_resource(resource) for resource in resources if self.check(resource)
+        }
 
         # Core v1 API group's priority is hard-coded in K8s and kubectl. Do the same. For example:
         # whenever "pods" is specified, and "pods.v1" & "pods.v1beta1.metrics.k8s.io" are found,
@@ -399,6 +414,24 @@ class Selector:
             result = v1only or result
 
         return result
+
+    def select_resource(self, resource: Resource) -> Resource:
+        if self.label_selector:
+            return Resource(
+                group=resource.group,
+                version=resource.version,
+                plural=resource.plural,
+                kind=resource.kind,
+                singular=resource.singular,
+                shortcuts=resource.shortcuts,
+                categories=resource.categories,
+                subresources=resource.subresources,
+                namespaced=resource.namespaced,
+                preferred=resource.preferred,
+                verbs=resource.verbs,
+                label_selector=self.label_selector,
+            )
+        return resource
 
 
 # Some predefined API endpoints that we use in the framework itself (not exposed to the operators).

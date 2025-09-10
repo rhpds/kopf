@@ -21,6 +21,7 @@ could execute on the yet-existing object (and its children, if created).
 """
 import dataclasses
 import enum
+from re import Pattern
 from typing import Any
 
 from kopf._cogs.configs import configuration
@@ -284,6 +285,7 @@ def detect_spawning_cause(
 def detect_changing_cause(
         *,
         finalizer: str,
+        deprecated_finalizer: str|Pattern[str]|None,
         raw_event: bodies.RawEvent,
         body: bodies.Body,
         old: bodies.BodyEssence | None = None,
@@ -312,7 +314,7 @@ def detect_changing_cause(
 
     # The finalizer has been just removed. We are fully done.
     deletion_is_ongoing = finalizers.is_deletion_ongoing(body=body)
-    deletion_is_blocked = finalizers.is_deletion_blocked(body=body, finalizer=finalizer)
+    deletion_is_blocked = finalizers.is_deletion_blocked(body=body, finalizer=finalizer, deprecated_finalizer=deprecated_finalizer)
     if deletion_is_ongoing and not deletion_is_blocked:
         return ChangingCause(reason=Reason.FREE, **kwargs)
 

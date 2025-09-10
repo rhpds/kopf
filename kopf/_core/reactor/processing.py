@@ -170,6 +170,7 @@ def _detect_causes(
     """Detect what are we going to do (or to skip) on this processing cycle."""
 
     finalizer = settings.persistence.finalizer
+    deprecated_finalizer = settings.persistence.deprecated_finalizer
     extra_fields = (
         # NB: indexing handlers are useless here, they are handled on their own.
         registry._watching.get_extra_fields(resource=resource) |
@@ -203,6 +204,7 @@ def _detect_causes(
 
     changing_cause = causes.detect_changing_cause(
         finalizer=finalizer,
+        deprecated_finalizer=deprecated_finalizer,
         raw_event=raw_event,
         resource=resource,
         indices=indexers.indices,
@@ -238,6 +240,7 @@ async def process_resource_causes(
     patch_initially_empty = not patch  # before we add new things in low-level handlers
 
     finalizer = settings.persistence.finalizer
+    deprecated_finalizer = settings.persistence.deprecated_finalizer
     watching_cause, spawning_cause, changing_cause = _detect_causes(
         indexers=indexers,
         registry=registry,
@@ -282,7 +285,7 @@ async def process_resource_causes(
     # The high-level handlers are prevented if this event cycle is dedicated to the finalizer.
     # The low-level handlers (on-event spying & daemon spawning) are still executed asap.
     deletion_is_ongoing = finalizers.is_deletion_ongoing(body=body)
-    deletion_is_blocked = finalizers.is_deletion_blocked(body=body, finalizer=finalizer)
+    deletion_is_blocked = finalizers.is_deletion_blocked(body=body, finalizer=finalizer, deprecated_finalizer=deprecated_finalizer)
     deletion_must_be_blocked = (
         (spawning_cause is not None and
          registry._spawning.requires_finalizer(
@@ -297,12 +300,12 @@ async def process_resource_causes(
 
     if deletion_must_be_blocked and not deletion_is_blocked and not deletion_is_ongoing:
         local_logger.debug("Adding the finalizer, thus preventing the actual deletion.")
-        patch.fns.append(functools.partial(finalizers.block_deletion, finalizer=finalizer))
+        patch.fns.append(functools.partial(finalizers.block_deletion, finalizer=finalizer, deprecated_finalizer=deprecated_finalizer))
         changing_cause = None  # prevent further high-level processing this time
 
     if not deletion_must_be_blocked and deletion_is_blocked:
         local_logger.debug("Removing the finalizer, as there are no handlers requiring it.")
-        patch.fns.append(functools.partial(finalizers.allow_deletion, finalizer=finalizer))
+        patch.fns.append(functools.partial(finalizers.allow_deletion, finalizer=finalizer, deprecated_finalizer=deprecated_finalizer))
         changing_cause = None  # prevent further high-level processing this time
 
     # If the state is inconsistent (yet), wait for new events in a hope that they bring consistency.

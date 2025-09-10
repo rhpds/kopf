@@ -30,6 +30,7 @@ import dataclasses
 import logging
 import warnings
 from collections.abc import Iterable
+from re import Pattern
 
 from kopf._cogs.configs import diffbase, progress
 from kopf._cogs.structs import reviews
@@ -417,6 +418,11 @@ class PersistenceSettings:
     """
     A string marker to be added to the list of finalizers to block the object
     from being deleted without the framework's or operator's permission.
+    """
+
+    deprecated_finalizer: str|Pattern[str]|None = None
+    """
+    Previous finalizer set when migrating finalizer value.
     """
 
     progress_storage: progress.ProgressStorage = dataclasses.field(

@@ -33,8 +33,7 @@ def is_deletion_blocked(
     return finalizer in finalizers
 
 def block_deletion(
-        *,
-        body: bodies.Body,
+        body: bodies.RawBody,
         finalizer: str,
         deprecated_finalizer: str|Pattern[str]|None,
 ) -> None:
@@ -42,8 +41,7 @@ def block_deletion(
         body.setdefault('metadata', {}).setdefault('finalizers', []).append(finalizer)
 
 def allow_deletion(
-        *,
-        body: bodies.Body,
+        body: bodies.RawBody,
         finalizer: str,
         deprecated_finalizer: str|Pattern[str]|None,
 ) -> None:

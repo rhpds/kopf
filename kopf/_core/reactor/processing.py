@@ -345,7 +345,7 @@ async def process_resource_causes(
     deleted = raw_event['type'] == 'DELETED'
     if not deleted and deletion_is_ongoing and deletion_is_blocked and not delays:
         local_logger.debug("Removing the finalizer, thus allowing the actual deletion.")
-        patch.fns.append(functools.partial(finalizers.allow_deletion, finalizer=finalizer))
+        patch.fns.append(functools.partial(finalizers.allow_deletion, finalizer=finalizer, deprecated_finalizer=deprecated_finalizer))
 
     return (delays, changing_cause is not None)
 
